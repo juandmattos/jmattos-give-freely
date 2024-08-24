@@ -5,6 +5,7 @@ import { useProducts } from './useProducts'
 import ProductItem from './ProductItem'
 import Pagination from '../../ui/Pagination'
 import { PRODUCTS_PER_PAGE } from '@/constants'
+import { useDebounce } from '@/hooks/useDebounce'
 
 const ProductList = () => {
   const [search, setSearch] = useState<string>('')
@@ -13,6 +14,7 @@ const ProductList = () => {
     currentPage,
     PRODUCTS_PER_PAGE
   )
+  const debouncedSearchTerm = useDebounce(search, 500) //500ms
 
   if (isLoadingProducts) return <Spinner />
   if (error) return <div>Error fetching products!</div>
@@ -30,7 +32,7 @@ const ProductList = () => {
     )
 
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
+    product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
   )
   const totalPages = Math.ceil((total || 0) / PRODUCTS_PER_PAGE)
 
